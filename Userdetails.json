@@ -1,0 +1,32 @@
+[
+  {
+    "username": "Matyi",
+    "password": "123",
+    "role": "U",
+    "Balance": 0
+  },
+  {
+    "username": "Krisi",
+    "password": "123",
+    "role": "U",
+    "Balance": 0
+  },
+  {
+    "username": "Domi",
+    "password": "123",
+    "role": "U",
+    "Balance": 0
+  },
+  {
+    "username": "Domi1",
+    "password": "123",
+    "role": "U",
+    "Balance": 0
+  },
+  {
+    "username": "Krisi1",
+    "password": "123",
+    "role": "U",
+    "Balance": 0
+  }
+]

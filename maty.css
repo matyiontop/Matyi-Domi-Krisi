@@ -1,0 +1,64 @@
+body {
+    background-image: url("hatter.jpg");
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: fixed;
+    background-size: cover;
+    position: relative;
+    color: white;
+}
+
+button{
+    background-color: burlywood;
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 12px;
+}
+
+button:hover{
+    background-color: rgb(151, 101, 66);
+}
+
+h1{
+    color: white;
+    text-align: center;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+
+.container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+input{
+    border-radius: 12px;
+    padding: 10px;
+    margin: 10px;
+}
+
+select{
+    border-radius: 12px;
+    padding: 10px;
+    margin: 10px;
+    font-size: 16px;
+    text-align: center;
+    background-color: burlywood;
+    border: none;
+    color: white;
+    cursor: pointer;
+}
+
+.kijelentkezes {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 100;
+}
