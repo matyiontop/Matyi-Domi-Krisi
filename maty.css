@@ -74,3 +74,9 @@ input{
   top: 0;
   left: 0;
 }
+
+.top-right {
+  position: absolute;  /* a képernyőhöz rögzítve */
+  top: 0;           /* felső szélhez */
+  right: 0;         /* jobb szélhez */
+}

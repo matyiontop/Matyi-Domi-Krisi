@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rocket Crash</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; font-family:sans-serif; }
+body { background:black; color:#f3f4f6; display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; }
+.container { text-align:center; }
+h1 { font-size:2.5rem; margin-bottom:20px; background: linear-gradient(135deg, red, darkred); -webkit-background-clip:text; color:transparent; }
+.money, .multiplier { font-weight:bold; margin:10px 0; }
+.money { color:limegreen; font-size:30px; font-weight: bold;}
+.multiplier { color:yellow; font-size:50px; transition: all 0.2s ease; }
+.controls { margin:20px 0; }
+input[type=number]{padding:6px;border-radius:8px;border:1px solid rgba(255,255,255,0.2);background:black;color:#f3f4f6;}
+button { padding:10px 20px; margin:0 5px; border:none; border-radius:8px; cursor:pointer; font-weight:bold; transition:0.3s; }
+#startBtn { background: var(--primary-gradient,orange); color:#000; }
+#cashoutBtn { background:green; color:#fff; }
+img { width:150px; margin-top:20px; transition: all 0.3s ease; }
+#penz-sor {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.back-button {
+  padding: 10px 20px;
+  background: red;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.back-button:hover {
+  background: darkred;
+}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>Rocket Crash</h1>
+<div id="penz-sor">
+  <button class="back-button" onclick="window.location.href='main.html'">Kilépés</button>
+  <div class="money" id="moneyDisplay">$1000</div>
+</div>
+<div class="controls">
+<label>Tét: <input type="number" id="betInput" min="1" value="100"></label>
+<button id="startBtn">Indítás</button>
+<button id="cashoutBtn" disabled>Cash Out</button>
+</div>
+<div class="status" id="status">Állapot: Várakozás</div>
+<img id="rocket" src="rocket.jpg" alt="Rocket">
+
+<div class="multiplier" id="multiplier">x1.00</div>
+</div>
+
+<script>
+const moneyDisplay = document.getElementById('money');
+const multiplierDisplay = document.getElementById('multiplier');
+const rocketImg = document.getElementById('rocket');
+const startBtn = document.getElementById('startBtn');
+const cashoutBtn = document.getElementById('cashoutBtn');
+const betInput = document.getElementById('betInput');
+const status = document.getElementById('status');
+
+let money = 1000;
+let currentBet = 0;
+let multiplier = 1;
+let interval, crashTime, startTime, gameRunning=false;
+
+function formatMultiplier(val){ return 'x'+val.toFixed(2); }
+
+startBtn.addEventListener('click', ()=>{
+    const bet = Number(betInput.value);
+    if(bet<=0 || bet>money){ alert("Érvénytelen tét!"); return; }
+    money -= bet; moneyDisplay.textContent = money;
+    currentBet = bet;
+    multiplier = 1;
+    multiplierDisplay.style.fontSize = "50px";
+    multiplierDisplay.textContent = formatMultiplier(multiplier);
+    rocketImg.src = 'rocket_megy.jpg';
+    status.textContent = 'Rakéta elindult!';
+    startBtn.disabled = true; cashoutBtn.disabled = false;
+    gameRunning = true;
+    startTime = Date.now();
+    crashTime = Math.random()*10000; // 0-20 mp között crash
+    interval = setInterval(updateMultiplier, 50);
+});
+
+function updateMultiplier(){
+    const elapsed = Date.now() - startTime;
+    multiplier = 1 + elapsed/3000; // gyorsan növekvő szorzó
+    multiplierDisplay.textContent = formatMultiplier(multiplier);
+    multiplierDisplay.style.fontSize = 50 + multiplier*5 + "px";
+    if(elapsed>=crashTime){
+        endGame(false);
+    }
+}
+
+cashoutBtn.addEventListener('click', ()=>{
+    if(gameRunning){
+        const profit = Math.round(currentBet*multiplier);
+        money += profit;
+        moneyDisplay.textContent = money;
+        status.textContent = `Kivetted: $${profit}`;
+        endGame(true);
+    }
+});
+
+function endGame(won){
+    clearInterval(interval);
+    gameRunning = false;
+    cashoutBtn.disabled = true;
+    startBtn.disabled = false;
+    rocketImg.src = 'rocket_robban.jpg';
+    if(!won) status.textContent = 'A rakéta felrobbant! Vesztettél!';
+    setTimeout(()=>{ rocketImg.src = 'rocket.jpg'; multiplierDisplay.style.fontSize="50px"; multiplierDisplay.textContent='x1.00'; status.textContent='Állapot: Várakozás'; }, 3000);
+}
+</script>
+</body>
+</html>
