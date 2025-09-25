@@ -67,6 +67,10 @@ startBtn.addEventListener("click", () => {
 
   console.log("Player hand:", playerHand);
   console.log("Dealer hidden:", hiddenCard);
+
+  // 🔒 Start gomb és tét letiltása
+  startBtn.disabled = true;
+  betInput.disabled = true;
 });
 
 // Hit gomb
@@ -74,6 +78,11 @@ hitBtn.addEventListener("click", () => {
   let newCard = drawCard();
   playerHand.push(newCard);
   playerCards.appendChild(createCard(newCard));
+
+  // ha több mint 21, azonnal vége (mintha stand-et nyomtunk volna)
+  if (handValue(playerHand) > 21) {
+    standBtn.click(); 
+  }
 });
 
 // Stand gomb
@@ -118,4 +127,8 @@ standBtn.addEventListener("click", () => {
 
   moneyBox.textContent = money;
   alert(result);
+
+  // 🔓 Start gomb és tét újra engedélyezése
+  startBtn.disabled = false;
+  betInput.disabled = false;
 });
