@@ -1,0 +1,510 @@
+<!doctype html>
+<html lang="hu">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Ride the Bus</title>
+
+  <style>
+* {
+padding: 0;
+margin: 0;
+box-sizing: border-box;
+font-family: sans-serif;
+}
+
+
+:root {
+--primary-color: red;
+--primary-dark: darkred;
+--primary-light: red;
+--primary-gradient: linear-gradient(135deg, red, darkred);
+--bg-dark: #1a1a1a;
+--text-light: #f3f4f6;
+--text-gray: #9ca3af;
+--card-bg: #252525;
+--card-hover: #2e2e2e;
+--border-radius: 12px;
+--shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.1);
+--shadow-md: 0 10px 15px rgba(0, 0, 0, 0.1);
+--shadow-lg: 0 20px 25px rgba(0, 0, 0, 0.15);
+--border-light: rgba(255, 255, 255, 0.05);
+--bg-overlay: rgba(255, 255, 255, 0.1);
+--text-dark: #000;
+--shadow-color-primary: rgba(139, 92, 246, 0.3);
+--shadow-color-primary-hover: rgba(139, 92, 246, 0.4);
+}
+
+
+body {
+background-color: var(--bg-dark);
+color: var(--text-light);
+min-height: 100vh;
+display: flex;
+justify-content: center;
+align-items: center;
+padding: 30px 15px;
+line-height: 1.6;
+}
+
+
+.app {
+width: 100%;
+max-width: 1100px;
+}
+
+
+header {
+text-align: center;
+margin-bottom: 40px;
+position: relative;
+}
+
+
+header h1 {
+font-size: 2.5rem;
+margin-bottom: 15px;
+background: var(--primary-gradient);
+-webkit-background-clip: text;
+background-clip: text;
+color: transparent;
+display: inline-block;
+position: relative;
+}
+
+
+header h1::after {
+content: "";
+position: absolute;
+width: 60px;
+height: 4px;
+background: var(--primary-gradient);
+bottom: -10px;
+left: 50%;
+transform: translateX(-50%);
+border-radius: 2px;
+}
+
+
+.money {
+position: absolute;
+right: 0;
+color: limegreen;
+font-size: 30px;
+font-weight: bold;
+}
+.controls {
+display: flex;
+gap: 12px;
+align-items: center;
+justify-content: center;
+margin-bottom: 25px;
+}
+
+
+input[type=number] {
+padding: 6px;
+border-radius: var(--border-radius);
+border: 1px solid var(--border-light);
+background: var(--card-bg);
+color: var(--text-light);
+}
+
+
+button {
+padding: 10px 16px;
+border-radius: var(--border-radius);
+border: none;
+cursor: pointer;
+background: var(--primary-gradient);
+color: var(--text-dark);
+font-weight: 600;
+transition: all 0.3s ease;
+box-shadow: var(--shadow-sm);
+}
+
+
+button:hover {
+transform: translateY(-3px);
+box-shadow: var(--shadow-lg);
+}
+.board {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 20px;
+}
+
+
+.panel {
+background: var(--card-bg);
+border-radius: var(--border-radius);
+padding: 20px;
+box-shadow: var(--shadow-md);
+}
+
+
+.cards-row {
+display: flex;
+gap: 14px;
+align-items: center;
+justify-content: center;
+padding: 20px 0;
+}
+
+
+.card {
+width: 80px;
+height: 120px;
+background: var(--text-light);
+border: 2px solid black;
+font-size: 2em;
+display: flex;
+justify-content: center;
+align-items: center;
+border-radius: var(--border-radius);
+box-shadow: var(--shadow-sm);
+}
+.card.back {
+background: linear-gradient(135deg,#333,#666);
+color: transparent;
+border-color: #222;
+}
+
+
+.buttons {
+display: flex;
+flex-direction: column;
+gap: 10px;
+}
+
+
+.hint {
+font-size: 0.9rem;
+color: var(--text-gray);
+margin-top: 10px;
+}
+#penz-sor {
+display: flex;
+justify-content: space-between;
+align-items: center;
+margin-bottom: 20px;
+}
+
+.back-button {
+padding: 10px 20px;
+background: red;
+border: none;
+border-radius: 8px;
+color: white;
+font-weight: bold;
+cursor: pointer;
+transition: 0.3s;
+}
+.back-button:hover {
+background: darkred;
+}
+
+.status {
+margin-top: 10px;
+padding: 10px;
+border-radius: var(--border-radius);
+background: var(--bg-overlay);
+border: 1px dashed var(--border-light);
+}
+footer {
+margin-top: 25px;
+font-size: 0.85rem;
+color: var(--text-gray);
+}
+
+
+@media(max-width:760px){
+.board{grid-template-columns:1fr}
+}
+  </style>
+</head>
+<body>
+  <div class="app">
+<header>
+<h1>Ride the Bus</h1>
+
+<div id="penz-sor">
+<button class="back-button" onclick="window.location.href='main.html'">Vissza</button>
+<div class="money" id="moneyDisplay">$0</div>
+</div>
+</header>
+
+
+<div class="controls">
+<label>Kezdő tét: <input id="startAmount" type="number" min="1" value="500" /></label>
+<button id="startBtn">Játék indítása</button>
+<button id="restartBtn" style="display:none">Újrakezd</button>
+<button id="cashoutBtn" disabled>Cash Out</button>
+</div>
+
+
+<div class="board">
+<div class="panel question">
+<h3>Aktuális kérdés</h3>
+<div id="promptText">Nyomd meg <strong>Játék indítása</strong> a kezdéshez.</div>
+
+
+<div class="cards-row">
+<div class="card back" id="card1">?</div>
+<div class="card back" id="card2">?</div>
+<div class="card back" id="card3">?</div>
+<div class="card back" id="card4">?</div>
+</div>
+
+
+<div class="status" id="statusBox">Állapot: Várakozás.</div>
+</div>
+
+
+<div class="panel buttons">
+<h3>Válaszok</h3>
+<div id="buttonsArea"></div>
+<div class="hint" id="hintArea"></div>
+</div>
+</div>
+
+
+<footer>
+<strong>Játékszabályok röviden:</strong>
+<ul>
+<li>1. kör: Szín tippelése — ha eltalálod, a tét megduplázódik.</li>
+<li>2. kör: Magasabb vagy alacsonyabb — helyes esetén a tét megháromszorozódik.</li>
+<li>3. kör: Bent vagy kívül — a harmadik lap az első kettő közötti tartományba esik-e.</li>
+<li>4. kör: Színtaláld meg — ha helyes, a tét 20-szorosára nő.</li>
+</ul>
+</footer>
+</div>
+<script>
+(function(){
+  const SUITS = [
+    {name:'♠',color:'black',key:'spades'},
+    {name:'♣',color:'black',key:'clubs'},
+    {name:'♦',color:'red',key:'diamonds'},
+    {name:'♥',color:'red',key:'hearts'},
+  ];
+  const RANKS = [
+    {short:'A',val:1},{short:'2',val:2},{short:'3',val:3},{short:'4',val:4},{short:'5',val:5},{short:'6',val:6},{short:'7',val:7},{short:'8',val:8},{short:'9',val:9},{short:'10',val:10},{short:'J',val:11},{short:'Q',val:12},{short:'K',val:13}
+  ];
+
+  function createDeck(){
+    const deck=[];
+    for(const s of SUITS){
+      for(const r of RANKS){
+        deck.push({suit:s.name, color:s.color, rank:r.short, value:r.val, suitKey:s.key});
+      }
+    }
+    return deck;
+  }
+  function shuffle(a){
+    for(let i=a.length-1;i>0;i--){
+      const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];
+    }
+  }
+
+  // Elements
+  const moneyDisplay = document.getElementById('moneyDisplay');
+  const startAmountInput = document.getElementById('startAmount');
+  const startBtn = document.getElementById('startBtn');
+  const restartBtn = document.getElementById('restartBtn');
+  const cashoutBtn = document.getElementById('cashoutBtn');
+  const promptText = document.getElementById('promptText');
+  const buttonsArea = document.getElementById('buttonsArea');
+  const hintArea = document.getElementById('hintArea');
+  const statusBox = document.getElementById('statusBox');
+  const cardsRow = {c1:document.getElementById('card1'), c2:document.getElementById('card2'), c3:document.getElementById('card3'), c4:document.getElementById('card4')};
+
+  // Game state
+  let deck=[],hand=[],currentRound=0,stake=0,bank=0; // bank stores cashout-able amount
+  const multipliers = {1:2,2:3,3:4,4:20}; // applied to current stake when correct
+
+  function resetBoard(){
+    deck = createDeck(); shuffle(deck);
+    hand = [];
+    currentRound = 0;
+    stake = 0;
+    bank = 0;
+    updateMoneyDisplay(0);
+    cardsRow.c1.className='card back'; cardsRow.c1.textContent='?';
+    cardsRow.c2.className='card back'; cardsRow.c2.textContent='?';
+    cardsRow.c3.className='card back'; cardsRow.c3.textContent='?';
+    cardsRow.c4.className='card back'; cardsRow.c4.textContent='?';
+    buttonsArea.innerHTML=''; hintArea.textContent=''; statusBox.textContent='Állapot: Várakozás.';
+    cashoutBtn.disabled=true; restartBtn.style.display='none'; startBtn.disabled=false; startAmountInput.disabled=false;
+  }
+
+  function updateMoneyDisplay(v){ moneyDisplay.textContent = '$' + Number(v).toLocaleString(); }
+
+  function drawCard(reveal=true){
+    if(deck.length===0) deck=createDeck(),shuffle(deck);
+    const c = deck.pop();
+    hand.push(c);
+    return c;
+  }
+
+  function showCard(element,card){
+    element.className='card';
+    element.textContent = card.rank + card.suit;
+    element.style.color = (card.color==='red')? 'crimson':'black';
+  }
+
+  function startGame(){
+    const val = Number(startAmountInput.value) || 0;
+    if(val<=0){ alert('Adj meg pozitív kezdő tétet!'); return; }
+    resetBoard();
+    stake = val; bank = 0; updateMoneyDisplay(bank);
+    statusBox.textContent = 'Indult: kezdőtét $' + stake;
+    startBtn.disabled=true; startAmountInput.disabled=true; cashoutBtn.disabled=false;
+    nextRound();
+  }
+
+  function nextRound(){
+    currentRound++;
+    buttonsArea.innerHTML=''; hintArea.textContent='';
+    if(currentRound===1){
+      // draw first card (face down)
+      const c1 = drawCard(false);
+      cardsRow.c1.className='card back'; cardsRow.c1.textContent='?';
+      promptText.innerHTML = '<strong>1. kör — Szín tippelése</strong><br>Meg kell tippelned, hogy a kártya <em>piros</em> (kőr/káró) vagy <em>fekete</em> (pikk/treff) lesz-e.';
+      // buttons: Piros / Fekete
+      ['piros','fekete'].forEach(col=>{
+        const btn=document.createElement('button'); btn.textContent = col[0].toUpperCase()+col.slice(1);
+        btn.onclick = ()=>{
+          // reveal
+          showCard(cardsRow.c1,c1);
+          const correct = (c1.color==='red' && col==='piros') || (c1.color==='black' && col==='fekete');
+          if(correct){
+            stake = stake * multipliers[1];
+            statusBox.textContent = 'Helyes! A tét most: $' + stake;
+            bank = stake; updateMoneyDisplay(bank);
+            setTimeout(nextRound,700);
+          } else {
+            stake = 0; bank = 0; updateMoneyDisplay(bank);
+            statusBox.textContent = 'Rossz szín — vesztettél. Vége.';
+            endGame(false);
+          }
+        };
+        buttonsArea.appendChild(btn);
+      });
+    } else if(currentRound===2){
+      // draw second card face down
+      const c2 = drawCard(false);
+      cardsRow.c2.className='card back'; cardsRow.c2.textContent='?';
+      const c1 = hand[0];
+      promptText.innerHTML = '<strong>2. kör — Magasabb vagy alacsonyabb</strong><br>A második lap értéke magasabb vagy alacsonyabb lesz-e az elsőnél?<br>(Árnyék: A érték = 1, K = 13)';
+      ['magasabb','alacsonyabb'].forEach(opt=>{
+        const btn=document.createElement('button'); btn.textContent = opt[0].toUpperCase()+opt.slice(1);
+        btn.onclick = ()=>{
+          showCard(cardsRow.c2,c2);
+          const correct = (c2.value > c1.value && opt==='magasabb') || (c2.value < c1.value && opt==='alacsonyabb');
+          if(correct){
+            stake = stake * multipliers[2];
+            statusBox.textContent = 'Helyes! A tét most: $' + stake;
+            bank = stake; updateMoneyDisplay(bank);
+            setTimeout(nextRound,700);
+          } else {
+            stake = 0; bank = 0; updateMoneyDisplay(bank);
+            statusBox.textContent = 'Rossz válasz — vesztettél. Vége.';
+            endGame(false);
+          }
+        };
+        buttonsArea.appendChild(btn);
+      });
+    } else if(currentRound===3){
+      const c3 = drawCard(false);
+      cardsRow.c3.className='card back'; cardsRow.c3.textContent='?';
+      const v1 = hand[0].value, v2 = hand[1].value;
+      const low = Math.min(v1,v2), high = Math.max(v1,v2);
+      // compute counts of inside vs outside in remaining deck (including remaining copies)
+      const remainingValues = deck.map(d=>d.value);
+      const insideCount = remainingValues.filter(v=> v>=low && v<=high).length;
+      const outsideCount = remainingValues.length - insideCount;
+      const insidePct = (insideCount/remainingValues.length*100).toFixed(1);
+      const outsidePct = (outsideCount/remainingValues.length*100).toFixed(1);
+
+      promptText.innerHTML = `<strong>3. kör — Bent vagy kívül</strong><br>Az új kártya értéke a két első közötti tartományon belül lesz-e (beleértve) vagy kívül?`;
+      hintArea.innerHTML = `Jelenleg a pakliban ${insideCount} érték esik <em>bent</em> (${insidePct}%), és ${outsideCount} érték esik <em>kívül</em> (${outsidePct}%). Optimális választás általában az, amely nagyobb eséllyel jár.`;
+
+      ['bent','kivul'].forEach(opt=>{
+        const btn=document.createElement('button'); btn.textContent = opt[0].toUpperCase()+opt.slice(1);
+        btn.onclick = ()=>{
+          showCard(cardsRow.c3,c3);
+          const inRange = (c3.value >= low && c3.value <= high);
+          const correct = (opt==='bent' && inRange) || (opt==='kivul' && !inRange);
+          if(correct){
+            stake = stake * multipliers[3];
+            statusBox.textContent = 'Helyes! A tét most: $' + stake;
+            bank = stake; updateMoneyDisplay(bank);
+            setTimeout(nextRound,700);
+          } else {
+            stake = 0; bank = 0; updateMoneyDisplay(bank);
+            statusBox.textContent = 'Rossz válasz — vesztettél. Vége.';
+            endGame(false);
+          }
+        };
+        buttonsArea.appendChild(btn);
+      });
+    } else if(currentRound===4){
+      const c4 = drawCard(false);
+      cardsRow.c4.className='card back'; cardsRow.c4.textContent='?';
+      promptText.innerHTML = '<strong>4. kör — Színtaláld meg</strong><br>Válassz a négy szín közül: pikk, treff, káró, kőr.';
+      ['pikk','treff','karo','kor'].forEach(opt=>{
+        const btn=document.createElement('button'); btn.textContent = opt[0].toUpperCase()+opt.slice(1);
+        btn.onclick = ()=>{
+          showCard(cardsRow.c4,c4);
+          const map = {pikk:'spades',treff:'clubs',karo:'diamonds',kor:'hearts'};
+          const correct = (map[opt] === c4.suitKey);
+          if(correct){
+            stake = stake * multipliers[4];
+            statusBox.textContent = 'GRATULÁLUNK! Helyes találat — nyeremény: $' + stake;
+            bank = stake; updateMoneyDisplay(bank);
+            endGame(true);
+          } else {
+            stake = 0; bank = 0; updateMoneyDisplay(bank);
+            statusBox.textContent = 'Rossz szín — semmivel távozol. Vége.';
+            endGame(false);
+          }
+        };
+        buttonsArea.appendChild(btn);
+      });
+    } else {
+      endGame(false);
+    }
+  }
+
+  function endGame(won){
+    cashoutBtn.disabled=true;
+    restartBtn.style.display='inline-block';
+    startBtn.disabled=false; startAmountInput.disabled=false;
+    // show final capture
+    if(won){
+      statusBox.textContent = statusBox.textContent + ' Játék vége.';
+    }
+    restartBtn.onclick = ()=>{ resetBoard(); };
+  }
+
+  // Cash out anytime
+  cashoutBtn.addEventListener('click', ()=>{
+    if(bank>0){
+      alert('Kivetted: $' + bank + '\nGratulálok!');
+      // reset state
+      resetBoard();
+    } else {
+      alert('Nincs mit kivenni.');
+    }
+  });
+
+  startBtn.addEventListener('click', startGame);
+  restartBtn.addEventListener('click', resetBoard);
+
+  // init
+  resetBoard();
+
+})();
+</script>
+</body>
+</html>
