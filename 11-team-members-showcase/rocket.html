@@ -45,7 +45,7 @@ img { width:150px; margin-top:20px; transition: all 0.3s ease; }
 <h1>Rocket Crash</h1>
 <div id="penz-sor">
   <button class="back-button" onclick="window.location.href='main.html'">Kilépés</button>
-  <div class="money" id="moneyDisplay">$1000</div>
+  <div class="money" id="money">$1000</div>
 </div>
 <div class="controls">
 <label>Tét: <input type="number" id="betInput" min="1" value="100"></label>
@@ -87,13 +87,13 @@ startBtn.addEventListener('click', ()=>{
     startBtn.disabled = true; cashoutBtn.disabled = false;
     gameRunning = true;
     startTime = Date.now();
-    crashTime = Math.random()*10000; // 0-20 mp között crash
+    crashTime = Math.random()*10000; 
     interval = setInterval(updateMultiplier, 50);
 });
 
 function updateMultiplier(){
     const elapsed = Date.now() - startTime;
-    multiplier = 1 + elapsed/3000; // gyorsan növekvő szorzó
+    multiplier = 1 + elapsed/3000; 
     multiplierDisplay.textContent = formatMultiplier(multiplier);
     multiplierDisplay.style.fontSize = 50 + multiplier*5 + "px";
     if(elapsed>=crashTime){
@@ -107,18 +107,32 @@ cashoutBtn.addEventListener('click', ()=>{
         money += profit;
         moneyDisplay.textContent = money;
         status.textContent = `Kivetted: $${profit}`;
-        endGame(true);
+    
+        rocketImg.src = 'rocket.jpg';
+        multiplierDisplay.style.fontSize="50px";
+        multiplierDisplay.textContent='x1.00';
+        endGame(true, true); 
     }
 });
 
-function endGame(won){
+function endGame(won, cashout=false){
     clearInterval(interval);
     gameRunning = false;
     cashoutBtn.disabled = true;
     startBtn.disabled = false;
-    rocketImg.src = 'rocket_robban.jpg';
-    if(!won) status.textContent = 'A rakéta felrobbant! Vesztettél!';
-    setTimeout(()=>{ rocketImg.src = 'rocket.jpg'; multiplierDisplay.style.fontSize="50px"; multiplierDisplay.textContent='x1.00'; status.textContent='Állapot: Várakozás'; }, 3000);
+    if(!cashout){ 
+        rocketImg.src = 'rocket_robban.jpg';
+        if(!won) status.textContent = 'A rakéta felrobbant! Vesztettél!';
+        setTimeout(()=>{ 
+            rocketImg.src = 'rocket.jpg'; 
+            multiplierDisplay.style.fontSize="50px"; 
+            multiplierDisplay.textContent='x1.00'; 
+            status.textContent='Állapot: Várakozás'; 
+        }, 3000);
+    } else {
+       
+        status.textContent += ' Játék vége.';
+    }
 }
 </script>
 </body>
