@@ -4,7 +4,7 @@ function Lekeres()
     .then(res => res.json())
     .then(users => {
         const classmoney = users.reduce((sum, u) => sum + u.Balance, 0);
-        document.getElementById("felhasznalofelulet").innerText = ("A teljes osztálypénz összege: " + classmoney.toLocaleString('hu-HU') + " FT");
+        document.getElementById("felhasznalofelulet").innerText = ("A teljes osztálypénz összege: " + classmoney.toLocaleString('hu-HU') + " $");
     })
     .catch(err => console.error(err));
 
@@ -86,7 +86,7 @@ function feltoltSelect() {
             users.forEach(user => {
                 const option = document.createElement('option');
                 option.value = user.username;
-                option.textContent = `Név: ${user.username} | Jelszó: ${user.password} | Rang: ${user.role} | Egyenleg: ${user.Balance} FT`;
+                option.textContent = `Név: ${user.username} | Jelszó: ${user.password} | Rang: ${user.role} | Egyenleg: ${user.Balance} $`;
                 select.appendChild(option);
             });
         })
@@ -151,7 +151,7 @@ function activefelh(index) {
         .then(response => response.json())
         .then(users => {
             if (index >= 0 && index < users.length) {
-                document.getElementById("activeUser").innerText = users[index].username + " \nEgyenleg: " + users[index].Balance.toLocaleString('hu-HU') + " FT";
+                document.getElementById("activeUser").innerText = users[index].username + " \nEgyenleg: " + users[index].Balance.toLocaleString('hu-HU') + " $";
             } else {
                 document.getElementById("activeUser").innerText = "Ismeretlen felhasználó";
             }
@@ -159,11 +159,25 @@ function activefelh(index) {
         .catch(error => console.error('Hiba az aktív felhasználó lekérésekor:', error));
     }
 
+function activefelh_bef(index) {
+    fetch('/users')
+        .then(response => response.json())
+        .then(users => {
+            if (index >= 0 && index < users.length) {
+                document.getElementById("activeUser_bef").innerText = users[index].username;
+            } else {
+                document.getElementById("activeUser_bef").innerText = "Ismeretlen felhasználó";
+            }
+        })
+        .catch(error => console.error('Hiba az aktív felhasználó lekérésekor:', error));
+    }
+
 function Befizet() {
-    let szam = getElementById("amount").value;
+    let szam = document.getElementById("amount").value;
+    let description = document.getElementById("description").value;
     szam = Number(szam);
     if (isNaN(szam) || szam <= 1) {
-        window.alert("Érvénytelen összeg!");
+        window.location.href = "http://localhost:3000/15-404-page/index.html";
         return;
     }
     let index = localStorage.getItem("activeUserIndex");
@@ -176,7 +190,8 @@ function Befizet() {
                 users[index].transactions.push({
                     type: "befizetés",
                     amount: szam,
-                    date: new Date().toISOString()
+                    date: new Date().toISOString(),
+                    description: description
                 });
                 fetch('/updateUsers', {
                     method: 'POST',
@@ -185,9 +200,7 @@ function Befizet() {
                 })
                 .then(res => res.text())
                 .then(msg => {
-                    document.getElementById("felhasznalofelulet").innerText = ("Sikeres befizetés! Új egyenleg: " + users[index].Balance.toLocaleString('hu-HU') + " FT");
                     activefelh(index);
-                    // Tranzakciók megjelenítése
                 })
                 .catch(err => window.alert("Hiba az egyenleg frissítésénél!"));
             } else {
@@ -206,7 +219,7 @@ function showTransactions() {
             for (let user of users) {
                 if (user.transactions && user.transactions.length > 0) {
                     for (let tx of user.transactions) {
-                        html += `<li>${user.username}:  ${tx.date}: ${tx.type} - ${tx.amount.toLocaleString('hu-HU')} FT</li>`;
+                        html += `<li>${user.username}:  ${tx.date}: ${tx.type} - ${tx.amount.toLocaleString('hu-HU')} $</li>`;
                     }
                 } else {
                     //html += "<li>Nincsenek tranzakciók.</li>";
@@ -260,7 +273,7 @@ function Kiad()
                 })
                 .then(res => res.text())
                 .then(msg => {
-                   document.getElementById("felhasznalofelulet").innerText = ("Sikeres kivétel! Új egyenleg: " + users[index].Balance.toLocaleString('hu-HU') + " FT");
+                   document.getElementById("felhasznalofelulet").innerText = ("Sikeres kivétel! Új egyenleg: " + users[index].Balance.toLocaleString('hu-HU') + " $");
                     activefelh(index); // Frissíti a megjelenített egyenleget
                 })
                 .catch(err => window.alert("Hiba az egyenleg frissítésénél!"));
@@ -299,4 +312,9 @@ function changePassword() {
             }
         });
 }
+
+function vissza() {
+    window.location.href = "http://localhost:3000/11-team-members-showcase/main.html";
+}
+
 

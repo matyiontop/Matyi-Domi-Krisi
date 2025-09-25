@@ -91,3 +91,9 @@ button {
   font-size: 1.2em;
   background: gold;
 }
+
+.top-right {
+  position: absolute;  /* a képernyőhöz rögzítve */
+  top: 0;           /* felső szélhez */
+  right: 0;         /* jobb szélhez */
+}

@@ -4,16 +4,18 @@
   <meta charset="UTF-8">
   <title>Blackjack</title>
   <link rel="stylesheet" href="black.css">
-  <script src="black.js" defer></script>
   <script src="../app.js"></script>
+  <script src="black.js" defer></script>
 </head>
 <body>
 
   <!-- Kilépés -->
   <a href="../11-team-members-showcase/main.html" class="exit">Kilépés</a>
   <!-- Vagyont jelző -->
-  <div class="money" id="moneyBox">1000000</div>
-
+              <h2 class="top-right" id="moneyBox">Aktív felhasználó: <span id="activeUser"></span></h2>
+        <script>
+            document.getElementById("activeUser").innerText = activefelh(localStorage.getItem("activeUserIndex"));
+        </script>
   <!-- Asztal -->
   <div class="table">
     <div class="dealer-area" id="dealer">

@@ -35,13 +35,6 @@ app.get('/users', (req, res) => {
     });
 });
 
-app.get('/moneys', (req, res) => {
-    fs.readFile('Money.txt', 'utf8', (err, data) => {
-        if (err) return res.status(500).send('Hiba a fájl olvasásakor');
-        res.send(data);
-    });
-});
-
 // Új felhasználó hozzáadása
 app.post('/register', (req, res) => {
     const { username, password, rank } = req.body;

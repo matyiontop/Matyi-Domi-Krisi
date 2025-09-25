@@ -13,6 +13,15 @@ let playerTotal = 0;
 let dealerTotal = 0;
 let money = parseInt(moneyBox.textContent);
 
+fetch("http://localhost:3000/users")
+  .then((response) => response.json())
+  .then((data) => {
+    const activeUserIndex = localStorage.getItem("activeUserIndex");
+    if (activeUserIndex !== null && data[activeUserIndex]) {
+      const activeUser = data[activeUserIndex];
+      money = activeUser.Balance;    }
+  });
+
 // segédfüggvény: kártya létrehozása
 function createCard(value) {
   let card = document.createElement("div");
