@@ -6,17 +6,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Expense Tracker</title>
     <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="../maty.css">
     <link
       href="https://fonts.googleapis.com/css?family=Poppins:100,100italic,200,200italic,300,300italic,regular,italic,500,500italic,600,600italic,700,700italic,800,800italic,900,900italic"
       rel="stylesheet"
     />
   </head>
   <body>
-                  <h2 class="bal-felso">Aktív felhasználó: <span id="activeUser"></span></h2>
-        <script>
-            document.getElementById("activeUser").innerText = activefelh(localStorage.getItem("activeUserIndex"));
-        </script>
     <div class="container">
+              <h2 class="bal-felso outline piross">Aktív felhasználó: <span id="activeUser_bef"></span></h2>
+        <script>
+            document.getElementById("activeUser_bef").innerText = activefelh_bef(localStorage.getItem("activeUserIndex"));
+        </script>
+        <button class="top-right" style="width: auto;" onclick="vissza()">Vissza</button>
       <h1>Expense Tracker</h1>
 
       <div class="balance-container">

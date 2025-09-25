@@ -5,10 +5,25 @@ const transactionListEl = document.getElementById("transaction-list");
 const transactionFormEl = document.getElementById("transaction-form");
 const descriptionEl = document.getElementById("description");
 const amountEl = document.getElementById("amount");
-
-let transactions = JSON.parse(localStorage.getItem("transactions")) || [];
+let transactions = [];
 
 transactionFormEl.addEventListener("submit", addTransaction);
+
+fetch("http://localhost:3000/users")
+  .then((response) => response.json())
+  .then((data) => {
+    const activeUserIndex = localStorage.getItem("activeUserIndex");
+    if (activeUserIndex !== null && data[activeUserIndex]) {
+      const activeUser = data[activeUserIndex];
+      document.getElementById("activeUser_bef").innerText = activeUser.username;
+      balanceEl.innerText = activeUser.Balance.toLocaleString("hu-HU") + " FT";
+        transactions = activeUser.transactions || [];
+        localStorage.setItem("transactions", JSON.stringify(transactions));
+        updateTransactionList();
+        updateSummary();
+    }
+  });
+
 
 function addTransaction(e) {
   e.preventDefault();
@@ -24,7 +39,6 @@ function addTransaction(e) {
   });
 
   localStorage.setItem("transactions", JSON.stringify(transactions));
-
   updateTransactionList();
   updateSummary();
 
@@ -52,7 +66,6 @@ function createTransactionElement(transaction) {
     <span>
   
     ${formatCurrency(transaction.amount)}
-      <button class="delete-btn" onclick="removeTransaction(${transaction.id})">x</button>
     </span>
   `;
 

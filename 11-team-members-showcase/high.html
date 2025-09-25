@@ -117,7 +117,7 @@ border-radius: var(--border-radius);
 border: none;
 cursor: pointer;
 background: var(--primary-gradient);
-color: var(--text-dark);
+color: white;
 font-weight: 600;
 transition: all 0.3s ease;
 box-shadow: var(--shadow-sm);
@@ -306,7 +306,7 @@ color: var(--text-gray);
     }
   }
 
-  // Elements
+
   const moneyDisplay = document.getElementById('moneyDisplay');
   const startAmountInput = document.getElementById('startAmount');
   const startBtn = document.getElementById('startBtn');
@@ -318,24 +318,25 @@ color: var(--text-gray);
   const statusBox = document.getElementById('statusBox');
   const cardsRow = {c1:document.getElementById('card1'), c2:document.getElementById('card2'), c3:document.getElementById('card3'), c4:document.getElementById('card4')};
 
-  // Game state
-  let deck=[],hand=[],currentRound=0,stake=0,bank=0; // bank stores cashout-able amount
-  const multipliers = {1:2,2:3,3:4,4:20}; // applied to current stake when correct
+  let deck=[],hand=[],currentRound=0,stake=0,bank=0; 
+  const multipliers = {1:2,2:3,3:4,4:20}; 
 
-  function resetBoard(){
+function resetBoard(){
     deck = createDeck(); shuffle(deck);
     hand = [];
     currentRound = 0;
     stake = 0;
     bank = 0;
-    updateMoneyDisplay(0);
+    // ne állítsd 0-ra
+    updateMoneyDisplay(money);
+    
     cardsRow.c1.className='card back'; cardsRow.c1.textContent='?';
     cardsRow.c2.className='card back'; cardsRow.c2.textContent='?';
     cardsRow.c3.className='card back'; cardsRow.c3.textContent='?';
     cardsRow.c4.className='card back'; cardsRow.c4.textContent='?';
     buttonsArea.innerHTML=''; hintArea.textContent=''; statusBox.textContent='Állapot: Várakozás.';
     cashoutBtn.disabled=true; restartBtn.style.display='none'; startBtn.disabled=false; startAmountInput.disabled=false;
-  }
+}
 
   function updateMoneyDisplay(v){ moneyDisplay.textContent = '$' + Number(v).toLocaleString(); }
 
@@ -352,29 +353,48 @@ color: var(--text-gray);
     element.style.color = (card.color==='red')? 'crimson':'black';
   }
 
-  function startGame(){
-    const val = Number(startAmountInput.value) || 0;
-    if(val<=0){ alert('Adj meg pozitív kezdő tétet!'); return; }
-    resetBoard();
-    stake = val; bank = 0; updateMoneyDisplay(bank);
-    statusBox.textContent = 'Indult: kezdőtét $' + stake;
-    startBtn.disabled=true; startAmountInput.disabled=true; cashoutBtn.disabled=false;
-    nextRound();
-  }
+let money = 100000; //kezdő p
+updateMoneyDisplay(money);
 
+function startGame(){
+    const val = Number(startAmountInput.value) || 0;
+    if(val <= 0){ alert('Adj meg pozitív kezdő tétet!'); return; }
+    if(val > money){ alert('Nincs elég pénzed a téthez!'); return; }
+
+    resetBoard();
+    stake = val; 
+    money -= val; 
+    bank = 0; 
+    updateMoneyDisplay(money); 
+
+    statusBox.textContent = 'Indult: kezdőtét $' + stake;
+    startBtn.disabled = true; 
+    startAmountInput.disabled = true; 
+    cashoutBtn.disabled = false;
+    nextRound();
+}
+
+cashoutBtn.addEventListener('click', ()=>{
+    if(bank > 0){
+        money += bank; 
+        updateMoneyDisplay(money);
+        alert('Kivetted: $' + bank + '\nGratulálok!');
+        resetBoard();
+    } else {
+        alert('Nincs mit kivenni.');
+    }
+});
   function nextRound(){
     currentRound++;
     buttonsArea.innerHTML=''; hintArea.textContent='';
     if(currentRound===1){
-      // draw first card (face down)
       const c1 = drawCard(false);
       cardsRow.c1.className='card back'; cardsRow.c1.textContent='?';
       promptText.innerHTML = '<strong>1. kör — Szín tippelése</strong><br>Meg kell tippelned, hogy a kártya <em>piros</em> (kőr/káró) vagy <em>fekete</em> (pikk/treff) lesz-e.';
-      // buttons: Piros / Fekete
+
       ['piros','fekete'].forEach(col=>{
         const btn=document.createElement('button'); btn.textContent = col[0].toUpperCase()+col.slice(1);
         btn.onclick = ()=>{
-          // reveal
           showCard(cardsRow.c1,c1);
           const correct = (c1.color==='red' && col==='piros') || (c1.color==='black' && col==='fekete');
           if(correct){
@@ -391,7 +411,6 @@ color: var(--text-gray);
         buttonsArea.appendChild(btn);
       });
     } else if(currentRound===2){
-      // draw second card face down
       const c2 = drawCard(false);
       cardsRow.c2.className='card back'; cardsRow.c2.textContent='?';
       const c1 = hand[0];
@@ -419,7 +438,7 @@ color: var(--text-gray);
       cardsRow.c3.className='card back'; cardsRow.c3.textContent='?';
       const v1 = hand[0].value, v2 = hand[1].value;
       const low = Math.min(v1,v2), high = Math.max(v1,v2);
-      // compute counts of inside vs outside in remaining deck (including remaining copies)
+
       const remainingValues = deck.map(d=>d.value);
       const insideCount = remainingValues.filter(v=> v>=low && v<=high).length;
       const outsideCount = remainingValues.length - insideCount;
@@ -480,28 +499,19 @@ color: var(--text-gray);
     cashoutBtn.disabled=true;
     restartBtn.style.display='inline-block';
     startBtn.disabled=false; startAmountInput.disabled=false;
-    // show final capture
     if(won){
       statusBox.textContent = statusBox.textContent + ' Játék vége.';
     }
     restartBtn.onclick = ()=>{ resetBoard(); };
   }
 
-  // Cash out anytime
-  cashoutBtn.addEventListener('click', ()=>{
-    if(bank>0){
-      alert('Kivetted: $' + bank + '\nGratulálok!');
-      // reset state
-      resetBoard();
-    } else {
-      alert('Nincs mit kivenni.');
-    }
-  });
+
+
 
   startBtn.addEventListener('click', startGame);
   restartBtn.addEventListener('click', resetBoard);
 
-  // init
+
   resetBoard();
 
 })();

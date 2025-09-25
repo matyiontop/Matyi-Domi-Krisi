@@ -25,7 +25,7 @@
   .machine{background:var(--panel);padding:20px;border-radius:var(--card-radius);box-shadow:var(--shadow)}
   .controls{display:flex;gap:12px;align-items:center;justify-content:center;margin-bottom:18px}
   input[type=number]{padding:8px;border-radius:10px;border:1px solid rgba(255,255,255,0.06);background:#111;color:#fff;width:140px}
-  button{padding:10px 16px;border-radius:10px;border:none;background:var(--primary-gradient);color:#000;font-weight:700;cursor:pointer}
+  button{padding:10px 16px;border-radius:10px;border:none;background:var(--primary-gradient);color:white;font-weight:700;cursor:pointer}
 
   .reels{display:flex;gap:14px;justify-content:center;padding:16px 0}
   .reel{width:130px;height:130px;border-radius:14px;background:#0f0f0f;border:2px solid rgba(255,255,255,0.04);display:flex;align-items:center;justify-content:center;font-size:40px}
@@ -107,7 +107,7 @@ function randPos(){ return Math.floor(Math.random()*reels.length); }
 function spin(){
   const bet = Math.max(1, Math.floor(Number(betInput.value) || 1));
   if(bet>balance){ alert('Nincs elég pénzed!'); return; }
-  balance -= bet; // levonjuk a tétet
+  balance -= bet;
   updateBalance(balance);
 
   const i1 = randPos(); const i2 = randPos(); const i3 = randPos();
