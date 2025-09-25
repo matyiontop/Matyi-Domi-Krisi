@@ -26,7 +26,8 @@
   --shadow-color-primary-hover: rgba(139, 92, 246, 0.4);
 }
 
-body {
+
+body  {
   background-color: var(--bg-dark);
   color: var(--text-light);
   min-height: 100vh;
@@ -38,6 +39,7 @@ body {
 }
 
 .container {
+  position: relative; /* FONTOS! */
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
