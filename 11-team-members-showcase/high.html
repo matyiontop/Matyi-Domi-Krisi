@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Ride the Bus - egyszerű HTML játék</title>
+  <title>Ride the Bus</title>
 
   <style>
 * {
@@ -89,8 +89,9 @@ border-radius: 2px;
 .money {
 position: absolute;
 right: 0;
-top: 0;
 color: limegreen;
+font-size: 30px;
+font-weight: bold;
 }
 .controls {
 display: flex;
@@ -188,11 +189,7 @@ justify-content: space-between;
 align-items: center;
 margin-bottom: 20px;
 }
-#penz {
-color: green;
-font-size: 50px;
-font-weight: bold;
-}
+
 .back-button {
 padding: 10px 20px;
 background: red;
@@ -229,7 +226,7 @@ color: var(--text-gray);
 <body>
   <div class="app">
 <header>
-<h1>Ride the Bus — Mini játék</h1>
+<h1>Ride the Bus</h1>
 
 <div id="penz-sor">
 <button class="back-button" onclick="window.location.href='main.html'">Vissza</button>
