@@ -1,0 +1,93 @@
+body {
+  font-family: Arial, sans-serif;
+  background: green;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+}
+
+.exit {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: #f44336;
+  color: white;
+  padding: 8px 15px;
+  border-radius: 5px;
+  text-decoration: none;
+}
+
+.money {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: white;
+  padding: 10px 20px;
+  border: 2px solid black;
+  font-weight: bold;
+}
+
+.table {
+  margin: 80px auto 20px;
+  width: 700px;
+  height: 400px;
+  background: #004400;
+  border: 3px solid #222;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  padding: 20px;
+}
+
+.dealer-area, .player-area {
+  color: rgb(0, 0, 0);
+}
+
+.cards {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.card {
+  width: 80px;
+  height: 120px;
+  background: white;
+  border: 2px solid black;
+  font-size: 2em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.bet-area {
+  margin-top: 20px;
+  font-size: 1.2em;
+  color: white;
+}
+
+.controls {
+  position: absolute;
+  right: 50px;
+  top: 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+button {
+  padding: 10px 20px;
+  font-size: 1.1em;
+  cursor: pointer;
+  border-radius: 8px;
+  border: none;
+}
+
+.start-btn {
+  margin-top: 20px;
+  padding: 10px 30px;
+  font-size: 1.2em;
+  background: gold;
+}
