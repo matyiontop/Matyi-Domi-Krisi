@@ -4,7 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Főoldal</title>
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="../maty.css">
+    <link rel="stylesheet" href="style.css"/>
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
@@ -13,9 +14,13 @@
       referrerpolicy="no-referrer"
     />
   </head>
+
   <body>
-          
     <div class="container">
+              <h2 class="bal-felso">Aktív felhasználó: <span id="activeUser"></span></h2>
+        <script>
+            document.getElementById("activeUser").innerText = activefelh(localStorage.getItem("activeUserIndex"));
+        </script>
       <p id="penz">0 ft<p>
       <header>
               <h1>Játékok</h1>
