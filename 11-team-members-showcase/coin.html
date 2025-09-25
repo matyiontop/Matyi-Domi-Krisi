@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pénzfeldobó játék, fej nél nyersz</title>
+<style>
+  body { 
+    font-family: Arial, sans-serif; 
+    margin: 0; 
+    padding: 0; 
+    background-color: #111; 
+    color: #fff; 
+  }
+  #container { 
+    display: flex; 
+    height: 100vh; 
+  }
+  #left, #right { 
+    width: 15%; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: flex-start; 
+    padding: 20px; 
+  }
+  #center { 
+    width: 70%; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center; 
+  }
+  button { 
+    padding: 10px 20px; 
+    font-size: 16px; 
+    margin: 10px; 
+    cursor: pointer; 
+    border: none;
+    border-radius: 5px;
+    background-color: #333; 
+    color: #fff; 
+    transition: 0.2s;
+  }
+  button:hover {
+    background-color: #555;
+  }
+  #coin { 
+    width: 200px; 
+    height: 200px; 
+    margin: 20px; 
+    display: none; 
+    border-radius: 50%;
+    border: 3px solid #fff;
+  }
+  input { 
+    width: 100px; 
+    text-align: center; 
+    padding: 5px; 
+    border-radius: 5px;
+    border: 1px solid #555;
+    background-color: #222;
+    color: #fff;
+  }
+  #tétGomb { 
+    background-color: gold; 
+    color: #000; 
+  }
+  h1 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+</style>
+</head>
+<body>
+<div id="container">
+  <div id="left">
+    <button onclick="kilepes()">Kilépés</button>
+  </div>
+
+  <div id="center">
+    <h1>Pénzfeldobó játék</h1>
+    <img id="coin" src="" alt="Fej vagy Írás">
+    <div>
+      Tét: <input type="number" id="tét" value="1000">
+    </div>
+    <button id="tétGomb" onclick="dobas()">Dobás</button>
+    <div id="result" style="margin-top: 20px; font-size: 18px;"></div>
+  </div>
+
+  <div id="right">
+    <button onclick="fogadas('fej')">Fej</button>
+    <button onclick="fogadas('irás')">Írás</button>
+    <div style="margin-top: 30px;">Vagyon: <span id="vagyon">1000000</span></div>
+  </div>
+</div>
+
+<script>
+let kezdoErtek = 500;
+let kivono = 20;
+let hozzaado = 50;
+let szam = 0;
+let vagyon = 1000000;
+
+function kilepes() {
+    alert("Kilépés...");
+    window.close();
+}
+
+function dobas() {
+    let tet = parseInt(document.getElementById("tét").value);
+    if(tet > vagyon) {
+        alert("Nincs elég pénzed!");
+        return;
+    }
+
+    const coin = document.getElementById("coin");
+    coin.style.display = "none";
+    document.getElementById("result").innerText = "Dobás folyamatban...";
+
+    setTimeout(() => {
+        let randomSzam = Math.floor(Math.random() * 1000) + 1;
+        let eredmeny;
+
+        if (randomSzam <= kezdoErtek) {
+            eredmeny = 0;
+            szam--;
+            kezdoErtek -= kivono;
+            vagyon -= tet;
+            if (kezdoErtek < 0) kezdoErtek = 0;
+        } else {
+            eredmeny = 1;
+            szam++;
+            kezdoErtek += hozzaado;
+            vagyon += tet;
+            if (kezdoErtek > 1000) kezdoErtek = 1000;
+        }
+
+        if (szam < -20) kezdoErtek = 300;
+        if (szam > 10) kezdoErtek = 700;
+
+        coin.src = eredmeny === 1 ? "fej.jpg" : "irás.jpg";
+        coin.style.display = "block";
+
+        document.getElementById("result").innerText = "Dobás eredménye: " + (eredmeny === 1 ? "Fej" : "Írás");
+        document.getElementById("vagyon").innerText = vagyon;
+    }, 1000);
+}
+
+// Példa: gomb választás (Fej vagy Írás)
+function fogadas(valasztas) {
+    alert("Fogadtál: " + valasztas);
+}
+</script>
+</body>
+</html>
