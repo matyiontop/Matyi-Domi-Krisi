@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <script src="../app.js"></script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Expense Tracker</title>
@@ -11,6 +12,10 @@
     />
   </head>
   <body>
+                  <h2 class="bal-felso">Aktív felhasználó: <span id="activeUser"></span></h2>
+        <script>
+            document.getElementById("activeUser").innerText = activefelh(localStorage.getItem("activeUserIndex"));
+        </script>
     <div class="container">
       <h1>Expense Tracker</h1>
 
@@ -53,7 +58,7 @@
               <small>Use negative (-) for expenses</small>
             </div>
 
-            <button type="submit">Add Transaction</button>
+            <button type="submit" onclick="Befizet()" id="amount">Add Transaction</button>
           </form>
         </div>
       </div>
