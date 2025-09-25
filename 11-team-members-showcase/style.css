@@ -26,7 +26,8 @@
   --shadow-color-primary-hover: rgba(139, 92, 246, 0.4);
 }
 
-body {
+
+body  {
   background-color: var(--bg-dark);
   color: var(--text-light);
   min-height: 100vh;
@@ -38,6 +39,7 @@ body {
 }
 
 .container {
+  position: relative; /* FONTOS! */
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
@@ -53,7 +55,7 @@ header h1 {
   margin-bottom: 15px;
   background: linear-gradient(to right, var(--primary-color), var(--primary-light));
   background-clip: text;
-  -webkit-background-clip: text; /* For Safari*/
+  -webkit-background-clip: text; 
   color: transparent;
   display: inline-block;
   position: relative;
@@ -297,3 +299,14 @@ header p {
     padding: 25px 15px;
   }
 }
+#penz{
+  color: green;
+    text-align: right;
+    font-size: 50px;
+    font-weight: bold;  
+}
+  a {
+    text-decoration: none;   
+    color: inherit;          
+
+  }
