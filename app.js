@@ -160,7 +160,7 @@ function activefelh(index) {
     }
 
 function Befizet() {
-    let szam = window.prompt("Kérek egy összeget a befizetéshez");
+    let szam = getElementById("amount").value;
     szam = Number(szam);
     if (isNaN(szam) || szam <= 1) {
         window.alert("Érvénytelen összeg!");
