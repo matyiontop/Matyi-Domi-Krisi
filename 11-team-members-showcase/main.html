@@ -6,6 +6,7 @@
     <title>Főoldal</title>
     <link rel="stylesheet" href="../maty.css">
     <link rel="stylesheet" href="style.css"/>
+    <script src="../app.js"></script>
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
@@ -21,7 +22,7 @@
         <script>
             document.getElementById("activeUser").innerText = activefelh(localStorage.getItem("activeUserIndex"));
         </script>
-      <p id="penz">0 ft<p>
+            <button id="gomb" class="top-right" onclick="Logout()">Kijelentkezés</button>
       <header>
               <h1>Játékok</h1>
       </header>

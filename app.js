@@ -72,7 +72,7 @@ function register() {
 }
 
 function Logout() {
-    window.location.href = "Login_Reg.html";
+    window.location.href = "http://localhost:3000/Login_Reg.html";
     window.alert("Sikeres kijelentkezés!");
     localStorage.clear();
 }
