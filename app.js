@@ -34,7 +34,7 @@ function Login() {
             if (data.role === "A") {
                 window.location.href = "admin.html";
             } else {
-                window.location.href = "./11-team-members-showcase/index.html";
+                window.location.href = "./11-team-members-showcase/main.html";
             }
             localStorage.setItem("activeUserIndex", data.felhaszi);
         } else {
