@@ -80,3 +80,11 @@ input{
   top: 0;           /* felső szélhez */
   right: 0;         /* jobb szélhez */
 }
+
+.outline {
+  -webkit-text-stroke: 1px black; /* Chrome, Edge, Safari */
+}
+
+.piross {
+    color: red;
+}

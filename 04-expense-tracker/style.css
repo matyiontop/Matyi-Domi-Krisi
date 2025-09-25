@@ -7,10 +7,10 @@
 }
 
 :root {
-  --primary-color: #16a34a; /* zöld */
-  --primary-dark: #14532d;
-  --primary-light: #22c55e;
-  --primary-gradient: linear-gradient(135deg, #16a34a, #14532d);
+  --primary-color: #f30303; /* zöld */
+  --primary-dark: #be0707;
+  --primary-light: #a70606;
+  --primary-gradient: linear-gradient(135deg, #ff2626, #c90303);
 
   --bg-dark: #1a1a1a;
   --card-bg: #252525;

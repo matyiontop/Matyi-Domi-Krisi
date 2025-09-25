@@ -1,38 +1,48 @@
 [
   {
-    "username": "Matyi",
+    "username": "Matyika",
     "password": "123",
     "role": "U",
-    "Balance": 0
+    "Balance": 7092,
+    "transactions": [
+      {
+        "type": "befizetés",
+        "amount": 6969,
+        "date": "2025-09-25T10:29:07.917Z",
+        "description": "Első befizetésem"
+      },
+      {
+        "type": "befizetés",
+        "amount": 123,
+        "date": "2025-09-25T10:30:53.450Z",
+        "description": "Rulett"
+      }
+    ]
   },
   {
-    "username": "Krisi",
+    "username": "Sanyika",
     "password": "123",
     "role": "U",
-    "Balance": 0
-  },
-  {
-    "username": "Domi",
-    "password": "123",
-    "role": "U",
-    "Balance": 0
-  },
-  {
-    "username": "Domi1",
-    "password": "1234",
-    "role": "U",
-    "Balance": 0
-  },
-  {
-    "username": "Krisi1",
-    "password": "123",
-    "role": "U",
-    "Balance": 0
-  },
-  {
-    "username": "Krisi123",
-    "password": "123",
-    "role": "U",
-    "Balance": 0
+    "Balance": 1246,
+    "transactions": [
+      {
+        "type": "befizetés",
+        "amount": 123,
+        "date": "2025-09-25T10:32:12.375Z",
+        "description": "Elso"
+      },
+      {
+        "type": "befizetés",
+        "amount": 123,
+        "date": "2025-09-25T10:33:38.923Z",
+        "description": "Masodik"
+      },
+      {
+        "type": "befizetés",
+        "amount": 1000,
+        "date": "2025-09-25T10:46:40.209Z",
+        "description": "Masodik"
+      }
+    ]
   }
 ]

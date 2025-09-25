@@ -13,6 +13,15 @@ let playerTotal = 0;
 let dealerTotal = 0;
 let money = parseInt(moneyBox.textContent);
 
+fetch("http://localhost:3000/users")
+  .then((response) => response.json())
+  .then((data) => {
+    const activeUserIndex = localStorage.getItem("activeUserIndex");
+    if (activeUserIndex !== null && data[activeUserIndex]) {
+      const activeUser = data[activeUserIndex];
+      money = activeUser.Balance;    }
+  });
+
 // segédfüggvény: kártya létrehozása
 function createCard(value) {
   let card = document.createElement("div");
@@ -71,6 +80,10 @@ startBtn.addEventListener("click", () => {
   // 🔒 Start gomb és tét letiltása
   startBtn.disabled = true;
   betInput.disabled = true;
+
+  // 🔓 Hit és Stand engedélyezése
+  hitBtn.disabled = false;
+  standBtn.disabled = false;
 });
 
 // Hit gomb
@@ -81,7 +94,7 @@ hitBtn.addEventListener("click", () => {
 
   // ha több mint 21, azonnal vége (mintha stand-et nyomtunk volna)
   if (handValue(playerHand) > 21) {
-    standBtn.click(); 
+    standBtn.click();
   }
 });
 
@@ -131,4 +144,12 @@ standBtn.addEventListener("click", () => {
   // 🔓 Start gomb és tét újra engedélyezése
   startBtn.disabled = false;
   betInput.disabled = false;
+
+  // 🔒 Hit és Stand letiltása
+  hitBtn.disabled = true;
+  standBtn.disabled = true;
 });
+
+// 🔒 Alapból tiltsuk le a Hit és Stand gombokat, hogy csak játék közben működjenek
+hitBtn.disabled = true;
+standBtn.disabled = true;
