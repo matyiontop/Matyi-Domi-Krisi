@@ -288,7 +288,8 @@ color: var(--text-gray);
     {name:'♥',color:'red',key:'hearts'},
   ];
   const RANKS = [
-    {short:'A',val:1},{short:'2',val:2},{short:'3',val:3},{short:'4',val:4},{short:'5',val:5},{short:'6',val:6},{short:'7',val:7},{short:'8',val:8},{short:'9',val:9},{short:'10',val:10},{short:'J',val:11},{short:'Q',val:12},{short:'K',val:13}
+    {short:'A',val:1},{short:'2',val:2},{short:'3',val:3},{short:'4',val:4},{short:'5',val:5},{short:'6',val:6},
+    {short:'7',val:7},{short:'8',val:8},{short:'9',val:9},{short:'10',val:10},{short:'J',val:11},{short:'Q',val:12},{short:'K',val:13}
   ];
 
   function createDeck(){
@@ -300,12 +301,13 @@ color: var(--text-gray);
     }
     return deck;
   }
+
   function shuffle(a){
     for(let i=a.length-1;i>0;i--){
-      const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];
+      const j=Math.floor(Math.random()*(i+1));
+      [a[i],a[j]]=[a[j],a[i]];
     }
   }
-
 
   const moneyDisplay = document.getElementById('moneyDisplay');
   const startAmountInput = document.getElementById('startAmount');
@@ -316,32 +318,26 @@ color: var(--text-gray);
   const buttonsArea = document.getElementById('buttonsArea');
   const hintArea = document.getElementById('hintArea');
   const statusBox = document.getElementById('statusBox');
-  const cardsRow = {c1:document.getElementById('card1'), c2:document.getElementById('card2'), c3:document.getElementById('card3'), c4:document.getElementById('card4')};
+  const cardsRow = {
+    c1: document.getElementById('card1'),
+    c2: document.getElementById('card2'),
+    c3: document.getElementById('card3'),
+    c4: document.getElementById('card4')
+  };
 
-  let deck=[],hand=[],currentRound=0,stake=0,bank=0; 
-  const multipliers = {1:2,2:3,3:4,4:20}; 
-
-function resetBoard(){
-    deck = createDeck(); shuffle(deck);
-    hand = [];
-    currentRound = 0;
-    stake = 0;
-    bank = 0;
-    // ne állítsd 0-ra
-    updateMoneyDisplay(money);
-    
-    cardsRow.c1.className='card back'; cardsRow.c1.textContent='?';
-    cardsRow.c2.className='card back'; cardsRow.c2.textContent='?';
-    cardsRow.c3.className='card back'; cardsRow.c3.textContent='?';
-    cardsRow.c4.className='card back'; cardsRow.c4.textContent='?';
-    buttonsArea.innerHTML=''; hintArea.textContent=''; statusBox.textContent='Állapot: Várakozás.';
-    cashoutBtn.disabled=true; restartBtn.style.display='none'; startBtn.disabled=false; startAmountInput.disabled=false;
-}
+  let deck=[], hand=[], currentRound=0;
+  let money = 100000; 
+  let baseStake = 0; 
+  let stake = 0; 
+  let bank = 0; 
+  let gameActive = false; 
+  const multipliers = {1:2, 2:3, 3:6, 4:20}; 
 
   function updateMoneyDisplay(v){ moneyDisplay.textContent = '$' + Number(v).toLocaleString(); }
+  updateMoneyDisplay(money);
 
-  function drawCard(reveal=true){
-    if(deck.length===0) deck=createDeck(),shuffle(deck);
+  function drawCard(){
+    if(deck.length===0){ deck=createDeck(); shuffle(deck); }
     const c = deck.pop();
     hand.push(c);
     return c;
@@ -353,44 +349,45 @@ function resetBoard(){
     element.style.color = (card.color==='red')? 'crimson':'black';
   }
 
-let money = 100000; //kezdő p
-updateMoneyDisplay(money);
+  function resetBoard(){
+    deck=createDeck(); shuffle(deck);
+    hand=[]; currentRound=0; stake=0; bank=0;
+    gameActive = false;
+    updateMoneyDisplay(money);
+    cardsRow.c1.className='card back'; cardsRow.c1.textContent='?';
+    cardsRow.c2.className='card back'; cardsRow.c2.textContent='?';
+    cardsRow.c3.className='card back'; cardsRow.c3.textContent='?';
+    cardsRow.c4.className='card back'; cardsRow.c4.textContent='?';
+    buttonsArea.innerHTML=''; hintArea.textContent=''; statusBox.textContent='Állapot: Várakozás.';
+    cashoutBtn.disabled=true; restartBtn.style.display='none'; startBtn.disabled=false; startAmountInput.disabled=false;
+  }
 
-function startGame(){
+  function startGame(){
     const val = Number(startAmountInput.value) || 0;
     if(val <= 0){ alert('Adj meg pozitív kezdő tétet!'); return; }
     if(val > money){ alert('Nincs elég pénzed a téthez!'); return; }
 
     resetBoard();
-    stake = val; 
-    money -= val; 
-    bank = 0; 
-    updateMoneyDisplay(money); 
+    baseStake = val;
+    money -= val;
+    stake = 0; bank = 0;
+    gameActive = true;
+    updateMoneyDisplay(money);
 
-    statusBox.textContent = 'Indult: kezdőtét $' + stake;
-    startBtn.disabled = true; 
-    startAmountInput.disabled = true; 
-    cashoutBtn.disabled = false;
+    statusBox.textContent = 'Indult: kezdőtét $' + baseStake;
+    startBtn.disabled = true; startAmountInput.disabled = true; cashoutBtn.disabled = false;
     nextRound();
-}
+  }
 
-cashoutBtn.addEventListener('click', ()=>{
-    if(bank > 0){
-        money += bank; 
-        updateMoneyDisplay(money);
-        alert('Kivetted: $' + bank + '\nGratulálok!');
-        resetBoard();
-    } else {
-        alert('Nincs mit kivenni.');
-    }
-});
   function nextRound(){
+    if(!gameActive) return; // ha a játék véget ért, nem folytathatja
     currentRound++;
     buttonsArea.innerHTML=''; hintArea.textContent='';
+
     if(currentRound===1){
-      const c1 = drawCard(false);
+      const c1=drawCard();
       cardsRow.c1.className='card back'; cardsRow.c1.textContent='?';
-      promptText.innerHTML = '<strong>1. kör — Szín tippelése</strong><br>Meg kell tippelned, hogy a kártya <em>piros</em> (kőr/káró) vagy <em>fekete</em> (pikk/treff) lesz-e.';
+      promptText.innerHTML = '<strong>1. kör — Szín tippelése</strong>';
 
       ['piros','fekete'].forEach(col=>{
         const btn=document.createElement('button'); btn.textContent = col[0].toUpperCase()+col.slice(1);
@@ -398,9 +395,10 @@ cashoutBtn.addEventListener('click', ()=>{
           showCard(cardsRow.c1,c1);
           const correct = (c1.color==='red' && col==='piros') || (c1.color==='black' && col==='fekete');
           if(correct){
-            stake = stake * multipliers[1];
+            stake = baseStake * multipliers[1];
+            bank = stake;
             statusBox.textContent = 'Helyes! A tét most: $' + stake;
-            bank = stake; updateMoneyDisplay(bank);
+            updateMoneyDisplay(bank);
             setTimeout(nextRound,700);
           } else {
             stake = 0; bank = 0; updateMoneyDisplay(bank);
@@ -410,20 +408,23 @@ cashoutBtn.addEventListener('click', ()=>{
         };
         buttonsArea.appendChild(btn);
       });
-    } else if(currentRound===2){
-      const c2 = drawCard(false);
+    }
+    else if(currentRound===2){
+      const c2=drawCard();
       cardsRow.c2.className='card back'; cardsRow.c2.textContent='?';
-      const c1 = hand[0];
-      promptText.innerHTML = '<strong>2. kör — Magasabb vagy alacsonyabb</strong><br>A második lap értéke magasabb vagy alacsonyabb lesz-e az elsőnél?<br>(Árnyék: A érték = 1, K = 13)';
+      const c1=hand[0];
+      promptText.innerHTML = '<strong>2. kör — Magasabb vagy alacsonyabb</strong>';
+
       ['magasabb','alacsonyabb'].forEach(opt=>{
         const btn=document.createElement('button'); btn.textContent = opt[0].toUpperCase()+opt.slice(1);
         btn.onclick = ()=>{
           showCard(cardsRow.c2,c2);
-          const correct = (c2.value > c1.value && opt==='magasabb') || (c2.value < c1.value && opt==='alacsonyabb');
+          const correct = (c2.value>c1.value && opt==='magasabb') || (c2.value<c1.value && opt==='alacsonyabb');
           if(correct){
-            stake = stake * multipliers[2];
+            stake = baseStake * multipliers[2];
+            bank = stake;
             statusBox.textContent = 'Helyes! A tét most: $' + stake;
-            bank = stake; updateMoneyDisplay(bank);
+            updateMoneyDisplay(bank);
             setTimeout(nextRound,700);
           } else {
             stake = 0; bank = 0; updateMoneyDisplay(bank);
@@ -433,31 +434,26 @@ cashoutBtn.addEventListener('click', ()=>{
         };
         buttonsArea.appendChild(btn);
       });
-    } else if(currentRound===3){
-      const c3 = drawCard(false);
+    }
+    else if(currentRound===3){
+      const c3=drawCard();
       cardsRow.c3.className='card back'; cardsRow.c3.textContent='?';
-      const v1 = hand[0].value, v2 = hand[1].value;
-      const low = Math.min(v1,v2), high = Math.max(v1,v2);
+      const v1=hand[0].value, v2=hand[1].value;
+      const low=Math.min(v1,v2), high=Math.max(v1,v2);
 
-      const remainingValues = deck.map(d=>d.value);
-      const insideCount = remainingValues.filter(v=> v>=low && v<=high).length;
-      const outsideCount = remainingValues.length - insideCount;
-      const insidePct = (insideCount/remainingValues.length*100).toFixed(1);
-      const outsidePct = (outsideCount/remainingValues.length*100).toFixed(1);
-
-      promptText.innerHTML = `<strong>3. kör — Bent vagy kívül</strong><br>Az új kártya értéke a két első közötti tartományon belül lesz-e (beleértve) vagy kívül?`;
-      hintArea.innerHTML = `Jelenleg a pakliban ${insideCount} érték esik <em>bent</em> (${insidePct}%), és ${outsideCount} érték esik <em>kívül</em> (${outsidePct}%). Optimális választás általában az, amely nagyobb eséllyel jár.`;
+      promptText.innerHTML = '<strong>3. kör — Bent vagy kívül</strong>';
 
       ['bent','kivul'].forEach(opt=>{
         const btn=document.createElement('button'); btn.textContent = opt[0].toUpperCase()+opt.slice(1);
         btn.onclick = ()=>{
           showCard(cardsRow.c3,c3);
-          const inRange = (c3.value >= low && c3.value <= high);
+          const inRange = (c3.value>=low && c3.value<=high);
           const correct = (opt==='bent' && inRange) || (opt==='kivul' && !inRange);
           if(correct){
-            stake = stake * multipliers[3];
+            stake = baseStake * multipliers[3]; // 3. kör 4-szeres
+            bank = stake;
             statusBox.textContent = 'Helyes! A tét most: $' + stake;
-            bank = stake; updateMoneyDisplay(bank);
+            updateMoneyDisplay(bank);
             setTimeout(nextRound,700);
           } else {
             stake = 0; bank = 0; updateMoneyDisplay(bank);
@@ -467,20 +463,23 @@ cashoutBtn.addEventListener('click', ()=>{
         };
         buttonsArea.appendChild(btn);
       });
-    } else if(currentRound===4){
-      const c4 = drawCard(false);
+    }
+    else if(currentRound===4){
+      const c4=drawCard();
       cardsRow.c4.className='card back'; cardsRow.c4.textContent='?';
-      promptText.innerHTML = '<strong>4. kör — Színtaláld meg</strong><br>Válassz a négy szín közül: pikk, treff, káró, kőr.';
-      ['pikk','treff','karo','kor'].forEach(opt=>{
+      promptText.innerHTML = '<strong>4. kör — Színtaláld meg</strong>';
+
+      ['pikk ♠','treff ♣','karo ♦','kor ♥'].forEach(opt=>{
         const btn=document.createElement('button'); btn.textContent = opt[0].toUpperCase()+opt.slice(1);
         btn.onclick = ()=>{
           showCard(cardsRow.c4,c4);
           const map = {pikk:'spades',treff:'clubs',karo:'diamonds',kor:'hearts'};
-          const correct = (map[opt] === c4.suitKey);
+          const correct = (map[opt]===c4.suitKey);
           if(correct){
-            stake = stake * multipliers[4];
+            stake = baseStake * multipliers[4];
+            bank = stake;
             statusBox.textContent = 'GRATULÁLUNK! Helyes találat — nyeremény: $' + stake;
-            bank = stake; updateMoneyDisplay(bank);
+            updateMoneyDisplay(bank);
             endGame(true);
           } else {
             stake = 0; bank = 0; updateMoneyDisplay(bank);
@@ -496,25 +495,31 @@ cashoutBtn.addEventListener('click', ()=>{
   }
 
   function endGame(won){
+    gameActive = false;
     cashoutBtn.disabled=true;
     restartBtn.style.display='inline-block';
     startBtn.disabled=false; startAmountInput.disabled=false;
-    if(won){
-      statusBox.textContent = statusBox.textContent + ' Játék vége.';
-    }
+    if(won){ statusBox.textContent += ' Játék vége.'; }
     restartBtn.onclick = ()=>{ resetBoard(); };
   }
 
-
-
+  cashoutBtn.addEventListener('click', ()=>{
+    if(bank>0){
+      money += bank;
+      updateMoneyDisplay(money);
+      alert('Kivetted: $' + bank + '\nGratulálok!');
+      resetBoard();
+    } else {
+      alert('Nincs mit kivenni.');
+    }
+  });
 
   startBtn.addEventListener('click', startGame);
   restartBtn.addEventListener('click', resetBoard);
 
-
   resetBoard();
-
 })();
+
 </script>
 </body>
 </html>

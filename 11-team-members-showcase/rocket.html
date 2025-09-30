@@ -87,7 +87,14 @@ startBtn.addEventListener('click', ()=>{
     startBtn.disabled = true; cashoutBtn.disabled = false;
     gameRunning = true;
     startTime = Date.now();
-    crashTime = Math.random()*10000; 
+
+    // 10% esély azonnali robbanásra
+    if(Math.random() < 0.1){
+        crashTime = 0;
+    } else {
+        crashTime = Math.random()*10000; 
+    }
+
     interval = setInterval(updateMultiplier, 50);
 });
 
