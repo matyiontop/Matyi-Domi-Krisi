@@ -3,7 +3,7 @@
     "username": "Matyika",
     "password": "123",
     "role": "U",
-    "Balance": 7092,
+    "Balance": 128215,
     "transactions": [
       {
         "type": "befizetés",
@@ -16,6 +16,24 @@
         "amount": 123,
         "date": "2025-09-25T10:30:53.450Z",
         "description": "Rulett"
+      },
+      {
+        "type": "befizetés",
+        "amount": 123123,
+        "date": "2025-09-25T11:07:23.142Z",
+        "description": "Masodik"
+      },
+      {
+        "type": "Blackjack",
+        "amount": -1000,
+        "date": "2025-09-30T10:34:52.560Z",
+        "description": "Vesztettél! Túllépted a 21-et (24)."
+      },
+      {
+        "type": "Blackjack",
+        "amount": -1000,
+        "date": "2025-09-30T10:34:56.896Z",
+        "description": "Vesztettél! Osztó: 19, Te: 11"
       }
     ]
   },
@@ -90,6 +108,38 @@
         "amount": 200000000,
         "date": "2025-09-30T09:46:04.458Z",
         "description": "nn"
+      }
+    ]
+  },
+  {
+    "username": "Matyikatest",
+    "password": "123",
+    "role": "U",
+    "Balance": 1450,
+    "transactions": [
+      {
+        "type": "befizetés",
+        "amount": 1000,
+        "date": "2025-09-30T10:35:22.511Z",
+        "description": "Első"
+      },
+      {
+        "type": "Blackjack",
+        "amount": -50,
+        "date": "2025-09-30T10:35:35.303Z",
+        "description": "Vesztettél! Túllépted a 21-et (22)."
+      },
+      {
+        "type": "Blackjack",
+        "amount": 0,
+        "date": "2025-09-30T10:35:53.665Z",
+        "description": "Döntetlen! Mindkettő: 20"
+      },
+      {
+        "type": "Blackjack",
+        "amount": 500,
+        "date": "2025-09-30T10:35:58.904Z",
+        "description": "Nyertél! Az osztó túllépte a 21-et (25)."
       }
     ]
   }

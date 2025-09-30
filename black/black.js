@@ -1,155 +1,218 @@
-const dealerCards = document.getElementById("dealerCards");
-const playerCards = document.getElementById("playerCards");
-const startBtn = document.getElementById("startBtn");
-const hitBtn = document.getElementById("hitBtn");
-const standBtn = document.getElementById("standBtn");
-const betInput = document.getElementById("bet");
-const moneyBox = document.getElementById("moneyBox");
+document.addEventListener('DOMContentLoaded', () => {
+  const dealerCards = document.getElementById("dealerCards");
+  const playerCards = document.getElementById("playerCards");
+  const startBtn = document.getElementById("startBtn");
+  const hitBtn = document.getElementById("hitBtn");
+  const standBtn = document.getElementById("standBtn");
+  const betInput = document.getElementById("bet");
+  const moneyBox = document.getElementById("moneyBox");
+  // opcionális eredmény doboz, ha van az UI-ban
+  const resultBox = document.getElementById("resultBox") || null;
 
-let playerHand = [];
-let dealerHand = [];
-let hiddenCard = null;
-let playerTotal = 0;
-let dealerTotal = 0;
-let money = parseInt(moneyBox.textContent);
+  let playerHand = [];
+  let dealerHand = [];
+  let hiddenCard = null;
+  let playerTotal = 0;
+  let dealerTotal = 0;
+  let money = 0;
+  let currentBet = 0;
 
-fetch("http://localhost:3000/users")
-  .then((response) => response.json())
-  .then((data) => {
-    const activeUserIndex = localStorage.getItem("activeUserIndex");
-    if (activeUserIndex !== null && data[activeUserIndex]) {
-      const activeUser = data[activeUserIndex];
-      money = activeUser.Balance;    }
-  });
-
-// segédfüggvény: kártya létrehozása
-function createCard(value) {
-  let card = document.createElement("div");
-  card.classList.add("card");
-  card.textContent = value;
-  return card;
-}
-
-// véletlen kártya 1–11 között
-function drawCard() {
-  return Math.floor(Math.random() * 11) + 1;
-}
-
-// összeg kiszámítása
-function handValue(hand) {
-  return hand.reduce((a, b) => a + b, 0);
-}
-
-// játék indítása
-startBtn.addEventListener("click", () => {
-  dealerCards.innerHTML = "";
-  playerCards.innerHTML = "";
-  playerHand = [];
-  dealerHand = [];
-  hiddenCard = null;
-
-  const bet = parseInt(betInput.value);
-
-  if (bet > money) {
-    alert("Nincs elég pénzed a tétre!");
-    return;
+  // Betöltjük az aktív felhasználó egyenlegét (ha van)
+  async function loadActiveUserBalance() {
+    try {
+      const res = await fetch('/users');
+      const users = await res.json();
+      const idx = parseInt(localStorage.getItem('activeUserIndex'), 10);
+      if (!isNaN(idx) && users[idx]) {
+        money = Number(users[idx].Balance) || 0;
+      } else {
+        money = parseInt(moneyBox.textContent, 10) || 0;
+      }
+    } catch (err) {
+      console.error('Hiba a felhasználók lekérésekor:', err);
+      money = parseInt(moneyBox.textContent, 10) || 0;
+    }
+    moneyBox.textContent = money;
+    console.log('Aktuális pénz:', money);
   }
 
-  // pénz levonás
-  money -= bet;
-  moneyBox.textContent = money;
-
-  // játékos 2 lap
-  playerHand.push(drawCard());
-  playerHand.push(drawCard());
-
-  playerHand.forEach(val => {
-    playerCards.appendChild(createCard(val));
-  });
-
-  // osztó 1 látható + 1 rejtett
-  dealerHand.push(drawCard());
-  hiddenCard = drawCard();
-
-  dealerCards.appendChild(createCard(dealerHand[0]));
-  dealerCards.appendChild(createCard("?"));
-
-  console.log("Player hand:", playerHand);
-  console.log("Dealer hidden:", hiddenCard);
-
-  // 🔒 Start gomb és tét letiltása
-  startBtn.disabled = true;
-  betInput.disabled = true;
-
-  // 🔓 Hit és Stand engedélyezése
-  hitBtn.disabled = false;
-  standBtn.disabled = false;
-});
-
-// Hit gomb
-hitBtn.addEventListener("click", () => {
-  let newCard = drawCard();
-  playerHand.push(newCard);
-  playerCards.appendChild(createCard(newCard));
-
-  // ha több mint 21, azonnal vége (mintha stand-et nyomtunk volna)
-  if (handValue(playerHand) > 21) {
-    standBtn.click();
+  // UI segédfüggvények
+  function createCard(value) {
+    const card = document.createElement('div');
+    card.classList.add('card');
+    card.textContent = value;
+    return card;
   }
-});
 
-// Stand gomb
-standBtn.addEventListener("click", () => {
-  playerTotal = handValue(playerHand);
+  function drawCard() {
+    // egyszerűsített kártyahúzás 1-11 értékekkel (szabály szerint módosítható)
+    return Math.floor(Math.random() * 11) + 1;
+  }
 
-  // osztó kártyák megjelenítése
-  dealerCards.innerHTML = "";
-  dealerHand.push(hiddenCard); // a rejtett kártya is bekerül
-  dealerHand.forEach(val => {
-    dealerCards.appendChild(createCard(val));
+  function handValue(hand) {
+    return hand.reduce((s, v) => s + v, 0);
+  }
+
+  function resetTable() {
+    dealerCards.innerHTML = '';
+    playerCards.innerHTML = '';
+    playerHand = [];
+    dealerHand = [];
+    hiddenCard = null;
+    playerTotal = 0;
+    dealerTotal = 0;
+    if (resultBox) resultBox.textContent = '';
+  }
+
+  // Start
+  startBtn.addEventListener('click', async () => {
+    resetTable();
+
+    const bet = parseInt(betInput.value, 10);
+    if (!Number.isInteger(bet) || bet <= 0) {
+      alert('Adj meg érvényes tétet!');
+      return;
+    }
+    if (bet > money) {
+      alert('Nincs elég pénzed a tétre!');
+      return;
+    }
+
+    currentBet = bet;
+
+    // tét levonása kliens oldalon (szerverre a kör végén frissítünk)
+    money -= bet;
+    moneyBox.textContent = money;
+
+    // kártyák kiosztása
+    playerHand.push(drawCard(), drawCard());
+    playerHand.forEach(v => playerCards.appendChild(createCard(v)));
+    playerTotal = handValue(playerHand);
+
+    dealerHand.push(drawCard());
+    hiddenCard = drawCard();
+    dealerCards.appendChild(createCard(dealerHand[0]));
+    dealerCards.appendChild(createCard('?'));
+
+    // gombok állapota
+    startBtn.disabled = true;
+    betInput.disabled = true;
+    hitBtn.disabled = false;
+    standBtn.disabled = false;
+
+    // ha azonnal 21 (blackjack) — automatikusan befejezzük a kört
+    if (playerTotal === 21) {
+      await finishRound();
+    }
   });
 
-  dealerTotal = handValue(dealerHand);
+  // Hit
+  hitBtn.addEventListener('click', () => {
+    const newCard = drawCard();
+    playerHand.push(newCard);
+    playerCards.appendChild(createCard(newCard));
+    playerTotal = handValue(playerHand);
 
-  // osztó húz, amíg <16 vagy amíg nem nagyobb a játékosnál
-  while (dealerTotal < 16 || (dealerTotal <= playerTotal && dealerTotal < 21)) {
-    let newCard = drawCard();
-    dealerHand.push(newCard);
-    dealerCards.appendChild(createCard(newCard));
+    if (playerTotal > 21) {
+      // bust -> vége
+      finishRound();
+    }
+  });
+
+  // Stand
+  standBtn.addEventListener('click', () => {
+    playerTotal = handValue(playerHand);
+    finishRound();
+  });
+
+  // Kör lezárása: dealer kirakja a lapokat, kiértékelés, szerver frissítés
+  async function finishRound() {
+    // mutassuk a rejtett kártyát
+    dealerCards.innerHTML = '';
+    dealerHand.push(hiddenCard);
+    dealerHand.forEach(v => dealerCards.appendChild(createCard(v)));
     dealerTotal = handValue(dealerHand);
+
+    // ha a játékos nem bust-olt, a dealer húz (standard szabály: <17)
+    if (playerTotal <= 21) {
+      while (dealerTotal < 17) {
+        const c = drawCard();
+        dealerHand.push(c);
+        dealerCards.appendChild(createCard(c));
+        dealerTotal = handValue(dealerHand);
+      }
+    }
+
+    // eredmény kiszámolása (a bet már levonódott korábban)
+    let result = '';
+    if (playerTotal > 21) {
+      result = `Vesztettél! Túllépted a 21-et (${playerTotal}).`;
+      // money változtatás: a tét már lekerült, így semmit nem adunk hozzá
+    } else if (dealerTotal > 21) {
+      result = `Nyertél! Az osztó túllépte a 21-et (${dealerTotal}).`;
+      money += currentBet * 2; // visszakapja a tétet + nyereményt
+    } else if (dealerTotal > playerTotal) {
+      result = `Vesztettél! Osztó: ${dealerTotal}, Te: ${playerTotal}`;
+    } else if (dealerTotal < playerTotal) {
+      result = `Nyertél! Osztó: ${dealerTotal}, Te: ${playerTotal}`;
+      money += currentBet * 2;
+    } else {
+      result = `Döntetlen! Mindkettő: ${playerTotal}`;
+      money += currentBet; // visszakapja a tétet
+    }
+
+    moneyBox.textContent = money;
+    if (resultBox) resultBox.textContent = result;
+    alert(result);
+
+    // szerver frissítése: beállítjuk a user.Balance-t a kliensen lévő money-re,
+    // tranzakciót a valós változás alapján jegyezzük
+    try {
+      const res = await fetch('/users');
+      const users = await res.json();
+      const idx = parseInt(localStorage.getItem('activeUserIndex'), 10);
+      if (!isNaN(idx) && users[idx]) {
+        const user = users[idx];
+        const prevBalance = Number(user.Balance) || 0;
+        const change = money - prevBalance; // mennyi a nettó különbség
+        user.Balance = money;
+        if (!user.transactions) user.transactions = [];
+        // ha szeretnéd, csak akkor pusholj tranzakciót, ha change !== 0
+        user.transactions.push({
+          type: "Blackjack",
+          amount: change,
+          date: new Date().toISOString(),
+          description: result
+        });
+
+        await fetch('/updateUsers', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(users)
+        });
+
+        // ha van ilyen függvény a projektedben, frissítjük az aktív felhasználó UI-t
+        if (typeof activefelh === 'function') activefelh(idx);
+      } else {
+        console.warn('Nincs aktív felhasználó a szerveren vagy az index érvénytelen.');
+      }
+    } catch (err) {
+      console.error('Hiba az egyenleg frissítésénél:', err);
+      alert('Hiba az egyenleg frissítésénél — nézd a konzolt részletekért.');
+    }
+
+    // visszaállítjuk az UI-t egy új körre
+    startBtn.disabled = false;
+    betInput.disabled = false;
+    hitBtn.disabled = true;
+    standBtn.disabled = true;
+    currentBet = 0;
   }
 
-  // kiértékelés
-  let result = "";
-  const bet = parseInt(betInput.value);
-
-  if (playerTotal > 21) {
-    result = `Vesztettél! Túllépted a 21-et (${playerTotal}).`;
-  } else if (dealerTotal > 21) {
-    result = `Nyertél! Az osztó túllépte a 21-et (${dealerTotal}).`;
-    money += bet * 2;
-  } else if (dealerTotal > playerTotal) {
-    result = `Vesztettél! Osztó: ${dealerTotal}, Te: ${playerTotal}`;
-  } else if (dealerTotal < playerTotal) {
-    result = `Nyertél! Osztó: ${dealerTotal}, Te: ${playerTotal}`;
-    money += bet * 2;
-  } else {
-    result = `Döntetlen! Mindkettő: ${playerTotal}`;
-    money += bet; // visszakapja a tétet
-  }
-
-  moneyBox.textContent = money;
-  alert(result);
-
-  // 🔓 Start gomb és tét újra engedélyezése
-  startBtn.disabled = false;
-  betInput.disabled = false;
-
-  // 🔒 Hit és Stand letiltása
+  // alapállapot
   hitBtn.disabled = true;
   standBtn.disabled = true;
-});
 
-// 🔒 Alapból tiltsuk le a Hit és Stand gombokat, hogy csak játék közben működjenek
-hitBtn.disabled = true;
-standBtn.disabled = true;
+  // betöltjük az aktív user balanszát
+  loadActiveUserBalance();
+});
