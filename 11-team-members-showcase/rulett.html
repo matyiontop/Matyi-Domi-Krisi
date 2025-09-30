@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Roulette</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; font-family:sans-serif; }
+body { background:#111; color:#f3f4f6; display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; }
+.container { text-align:center; }
+h1 { font-size:2.5rem; margin-bottom:20px; background: linear-gradient(135deg, red, darkred); -webkit-background-clip:text; color:transparent; }
+.money, .result { font-weight:bold; margin:10px 0; }
+.money { color:limegreen; font-size:30px; }
+.result { color:yellow; font-size:2rem; margin-top:20px; }
+.controls { margin:20px 0; display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
+input[type=number]{padding:6px;border-radius:8px;border:1px solid rgba(255,255,255,0.2);background:#222;color:#f3f4f6;}
+button { padding:10px 20px; border:none; border-radius:8px; cursor:pointer; font-weight:bold; transition:0.3s; }
+#spinBtn { background:orange; color:#000; }
+#cashoutBtn { background:green; color:#fff; }
+.bet-buttons { display:flex; gap:5px; flex-wrap:wrap; justify-content:center; margin-top:10px; }
+.bet-buttons button { background:#444; color:#f3f4f6; }
+#status { margin-top:10px; color:#ccc; }
+</style>
+</head>
+<body>
+<div class="container">
+<h1>Roulette</h1>
+<div class="money" id="moneyDisplay">$1000</div>
+
+<div class="controls">
+<label>Tét: <input type="number" id="betInput" min="1" value="100"></label>
+<button id="spinBtn">Spin</button>
+<button id="cashoutBtn" disabled>Cash Out</button>
+</div>
+
+<div class="bet-buttons">
+<button data-bet="red">Piros</button>
+<button data-bet="black">Fekete</button>
+<button data-bet="green">Zöld (0)</button>
+<!-- Lehet számokkal is bővíteni -->
+</div>
+
+<div class="result" id="result">Állapot: Várakozás</div>
+<div id="status"></div>
+</div>
+
+<script>
+const moneyDisplay = document.getElementById('moneyDisplay');
+const betInput = document.getElementById('betInput');
+const spinBtn = document.getElementById('spinBtn');
+const cashoutBtn = document.getElementById('cashoutBtn');
+const resultDisplay = document.getElementById('result');
+const statusDisplay = document.getElementById('status');
+const betButtons = document.querySelectorAll('.bet-buttons button');
+
+let money = 1000;
+let currentBet = 0;
+let currentChoice = null;
+let multiplier = 0;
+
+function updateMoney(){ moneyDisplay.textContent = '$' + money; }
+
+betButtons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+        currentChoice = btn.dataset.bet;
+        statusDisplay.textContent = 'Kiválasztott tét: ' + currentChoice;
+    });
+});
+
+spinBtn.addEventListener('click', ()=>{
+    const bet = Number(betInput.value);
+    if(!currentChoice){ alert('Válassz piros, fekete vagy zöldet!'); return; }
+    if(bet <= 0 || bet > money){ alert('Érvénytelen tét!'); return; }
+
+    money -= bet; updateMoney();
+    currentBet = bet;
+
+    resultDisplay.textContent = 'Pörgetés...';
+    spinBtn.disabled = true;
+    cashoutBtn.disabled = true;
+
+    setTimeout(()=>{
+        // Véletlenszerű szám/szín
+        const colors = ['red','black','green'];
+        const randomIndex = Math.random() < 0.027 ? 2 : Math.random()<0.5?0:1; // 2.7% zöld, 50-50 piros/fekete
+        const outcome = colors[randomIndex];
+
+        let won = false;
+        if(outcome === currentChoice){
+            won = true;
+            multiplier = outcome === 'green'? 35 : 2;
+        }
+
+        if(won){
+            const profit = currentBet * multiplier;
+            resultDisplay.textContent = `Nyertél! ${outcome.toUpperCase()} x${multiplier} → $${profit}`;
+            currentBet = profit; // tároljuk nyereményre a cashoutot
+            cashoutBtn.disabled = false;
+        } else {
+            resultDisplay.textContent = `Vesztettél! Kijött: ${outcome.toUpperCase()}`;
+            currentBet = 0;
+            spinBtn.disabled = true; // nem lehet újra pörgetni
+        }
+
+        statusDisplay.textContent = 'Állapot: Kész';
+    }, 1000);
+});
+
+cashoutBtn.addEventListener('click', ()=>{
+    money += currentBet;
+    updateMoney();
+    resultDisplay.textContent = `Kivetted: $${currentBet}`;
+    currentBet = 0;
+    spinBtn.disabled = false;
+    cashoutBtn.disabled = true;
+    statusDisplay.textContent = 'Állapot: Várakozás';
+});
+updateMoney();
+</script>
+</body>
+</html>
