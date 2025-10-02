@@ -142,5 +142,61 @@
         "description": "Nyertél! Az osztó túllépte a 21-et (25)."
       }
     ]
+  },
+  {
+    "username": "01",
+    "password": "000",
+    "role": "U",
+    "Balance": 2222219222,
+    "transactions": [
+      {
+        "type": "befizetés",
+        "amount": 2222222222,
+        "date": "2025-09-30T11:09:23.769Z",
+        "description": "vnbv"
+      },
+      {
+        "type": "Blackjack",
+        "amount": -1000,
+        "date": "2025-09-30T11:09:50.974Z",
+        "description": "Vesztettél! Túllépted a 21-et (26)."
+      },
+      {
+        "type": "Blackjack",
+        "amount": -1000,
+        "date": "2025-09-30T11:10:09.737Z",
+        "description": "Vesztettél! Túllépted a 21-et (24)."
+      },
+      {
+        "type": "Blackjack",
+        "amount": -1000,
+        "date": "2025-09-30T11:10:16.062Z",
+        "description": "Vesztettél! Osztó: 21, Te: 18"
+      },
+      {
+        "type": "Blackjack",
+        "amount": 1000,
+        "date": "2025-09-30T11:10:28.992Z",
+        "description": "Nyertél! Az osztó túllépte a 21-et (22)."
+      },
+      {
+        "type": "Blackjack",
+        "amount": -1000,
+        "date": "2025-09-30T11:10:39.647Z",
+        "description": "Vesztettél! Túllépted a 21-et (22)."
+      },
+      {
+        "type": "Blackjack",
+        "amount": 1000,
+        "date": "2025-09-30T11:10:58.160Z",
+        "description": "Nyertél! Az osztó túllépte a 21-et (25)."
+      },
+      {
+        "type": "Blackjack",
+        "amount": -1000,
+        "date": "2025-09-30T11:11:04.774Z",
+        "description": "Vesztettél! Osztó: 20, Te: 19"
+      }
+    ]
   }
 ]
